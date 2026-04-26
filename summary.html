@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Summary</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background-color: #f4f4f4; 
+        }
+
+        .container { 
+            width: 500px; 
+            margin: auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 50px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
+
+        .item { 
+            margin-bottom: 10px; 
+            padding-bottom: 5px; 
+            border-bottom: 1px solid #ddd; 
+        }
+
+        h3 { 
+            color: #4CAF50; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <h2>Order Summary</h2>
+
+        <div id="displayArea"></div>
+        <h3>Thank you for your preorder!</h3>
+
+        <button onclick="window.location.href='preorder.html'" style="width:100%; padding:10px; cursor:pointer;">Back to Order</button>
+    </div>
+
+    <script>
+
+        // Cookie management functions 
+        // Get the value of a cookie by name
+        function getCookie(name) {
+            const prevName = name + "=";
+            const ca = document.cookie.split(';');
+
+            for (let i = 0; i < ca.length; i++) {
+
+            let c = ca[i];
+
+            while (c.charAt(0) == ' ') {c = c.substring(1);}
+            if (c.indexOf(prevName) == 0) return c.substring(prevName.length, c.length);}
+        
+            return "";
+        }
+        // On page load, retrieve order data from cookies/localStorage and display it
+        window.onload = function() {
+            let name = getCookie("customerName");
+
+            if (name == "") name = localStorage.getItem("customerName");
+
+            const product = localStorage.getItem("product");
+            const quantity = localStorage.getItem("quantity");
+            const pickup = localStorage.getItem("pickup");
+            const address = localStorage.getItem("address");
+
+            let price = 0;
+
+            if (product == "Standard Model (PHP 2500)") price = 2500;
+                else if (product == "Pro Model (PHP 3500)") price = 3500;
+                    const total = price * quantity;
+                    let content = "<p>Customer: " + name + "</p>";
+                    content += "<p>Product: " + product + "</p>";
+                    content += "<p>Quantity: " + quantity + "</p>";
+                    content += "<p>Total Amount: PHP " + total + "</p>";
+                    content += "<p>Pickup: " + pickup + "</p>";
+
+                    if (pickup == "Delivery") content += "<p>Address: " + address + "</p>";
+                    document.getElementById("displayArea").innerHTML = content;}
+    </script>
+</body>
+</html>

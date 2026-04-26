@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pre-Order Form</title>
+    <style>
+    body {
+      font-family: Arial;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 95%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+
+    #terms {
+      width: 10%;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h2>Vent It Out: Smoke Intake Filtration System</h2>
+        <p>Did you know that air pollution can cause sickness in our body especially in areas that mixes with smoke air? Well, meet Vent It Out! It's a system that is built for reducing localized air pollution by capturing cigarette smoke before it takes the whole place. </p>
+        <p> In our project, it uses negative pressure ventilation.  An exhaust fan creates a low-pressure zone inside the device. Since air moves from high pressure to low pressure, the surrounding smoke is pulled directly into the system</p>
+
+        <div id="errorMsg" class="error"></div>
+
+        <form onsubmit="return handleOrder()">
+            <label>Name:</label>
+            <input type="text" id="name">
+
+            <label>Product:</label>
+            <select id="variant">
+                <option value="">Select</option>
+                <option value="Premium Model (PHP 2500)">Standard Model (PHP 2500)</option>
+                <option value="Pro Max Model (PHP 3500)">Pro Model (PHP 3500)</option>
+            </select>
+
+            <label>Quantity:</label>
+            <input type="number" id="quantity">
+
+            <label>Pickup Method:</label>
+            <select id="pickup">
+                <option value="">Select</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Meetup">Meetup</option>
+            </select>
+
+            <label>Address (for delivery only):</label>
+            <input type="text" id="address">    
+
+            <label>
+                <input type="checkbox" id="terms"> I accept terms
+            </label>
+            <br><br>
+
+            <button type="button" onclick="loadPreviousOrder()">Load Previous Order</button>
+            <button type="submit">Submit</button>
+
+        </form>
+    </div>
+
+    <script>
+
+    // COOKIE FUNCTIONS
+    // Inputs a cookie with name, value, and max age
+
+    function setCookie(name, value, maxAge) {
+        document.cookie = name + "=" + value + "; max-age=" + maxAge + "; path=/";}
+        
+    // Take the value of a cookie by name
+    function getCookie(name) {
+        const cname = name + "=";
+        const ca = document.cookie.split(';');
+
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {c = c.substring(1);}
+            if (c.indexOf(cname) == 0) return c.substring(cname.length, c.length);}
+
+            return "";}
+
+    // This part deletes a cookie by putting its max age to 0
+    function deleteCookie(name) {
+            document.cookie = name + "=; max-age=0; path=/";}
+
+    // This area is a form validation function which determine empty fields and returns a list of errors
+    function validateForm(name, variant, quantity, pickup, address, terms) {
+        const errorList = [];
+
+        if (name == "") errorList.push("customer name");
+        if (variant == "") errorList.push("product");
+        if (quantity == "" || quantity <= 0) errorList.push("quantity");
+        if (pickup == "") errorList.push("pickup method");
+        if (pickup == "Delivery" && address == "") errorList.push("address");
+        if (terms == false) errorList.push("terms checkbox");
+
+        return errorList;}
+
+    // Handle form submission: validate input, save data, and redirect to summary page
+    function handleOrder() {
+        document.getElementById("errorMsg").innerHTML = "";
+
+        const name = document.getElementById("name").value;
+        const variant = document.getElementById("variant").value;
+        const quantity = document.getElementById("quantity").value;
+        const pickup = document.getElementById("pickup").value;
+        const address = document.getElementById("address").value;
+        const terms = document.getElementById("terms").checked;
+        const errorList = validateForm(name, variant, quantity, pickup, address, terms);
+
+        if (errorList.length > 0) { document.getElementById("errorMsg").innerHTML = "The following fields cannot be empty:<br>" + errorList.join("<br>"); return false; }
+        setCookie("customerName", name, 86400);
+
+        localStorage.setItem("customerName", name);
+        localStorage.setItem("product", variant);
+        localStorage.setItem("quantity", quantity);
+        localStorage.setItem("pickup", pickup);
+        localStorage.setItem("address", address);
+        window.location.href = "summary.html";
+
+        return false;}
+
+    // Load previous order data into the form if available
+    function loadPreviousOrder() {
+        let prevName = getCookie("customerName");
+
+        if (prevName == "") prevName = localStorage.getItem("customerName");
+
+        const prevProduct = localStorage.getItem("product");
+
+        if (prevName == "" || prevName == null || prevProduct == null) document.getElementById("errorMsg").innerHTML = "No previous order data found"; 
+         else {
+            document.getElementById("name").value = prevName;
+            document.getElementById("variant").value = prevProduct;
+            document.getElementById("quantity").value = localStorage.getItem("quantity");
+            document.getElementById("pickup").value = localStorage.getItem("pickup");
+            document.getElementById("address").value = localStorage.getItem("address");
+            document.getElementById("terms").checked = true;
+            document.getElementById("errorMsg").innerHTML = "";}}
+</script>
+</body>
+</html>
